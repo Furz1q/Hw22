@@ -1,14 +1,14 @@
 package com.example.HOME.controller;
 
 import com.example.HOME.model.Faculty;
+import com.example.HOME.model.Student;
 import com.example.HOME.service.FacultyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/faculties")
@@ -25,5 +25,11 @@ public class FacultyController {
     @GetMapping("/search")
     public List<Faculty> searchFaculties(@RequestParam String name, @RequestParam String color) {
         return facultyService.searchFaculties(name, color);
+    }
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<Student>> getStudentsByFaculty(@PathVariable Long id) {
+        Optional<Faculty> faculty = facultyService.getFacultyById(id);
+        return faculty.map(value -> ResponseEntity.ok(value.getStudents()))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
